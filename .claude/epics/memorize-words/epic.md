@@ -4,7 +4,7 @@ status: backlog
 created: 2025-09-22T01:10:55Z
 progress: 0%
 prd: .claude/prds/memorize-words.md
-github: [Will be updated when synced to GitHub]
+github: https://github.com/wangjia15/memorize-words/issues/1
 ---
 
 # Epic: memorize-words
@@ -134,14 +134,14 @@ High-level task categories that will be created:
 4. Performance optimization and testing (Week 7-8)
 
 ## Tasks Created
-- [ ] 001.md - Project Foundation Setup (parallel: true, 8 points)
-- [ ] 002.md - Database Schema Design (parallel: false, 12 points)
-- [ ] 003.md - Authentication System (parallel: false, 10 points)
-- [ ] 004.md - Vocabulary Management System (parallel: false, 12 points)
-- [ ] 005.md - Learning Interface (parallel: false, 14 points)
-- [ ] 006.md - Review System (parallel: false, 16 points)
-- [ ] 007.md - Progress Tracking & Analytics (parallel: false, 18 points)
-- [ ] 008.md - Performance Optimization & Testing (parallel: false, 20 points)
+- [ ] #2 - Project Foundation Setup (parallel: true)
+- [ ] #3 - Database Schema Design (parallel: false)
+- [ ] #4 - Authentication System (parallel: false)
+- [ ] #5 - Vocabulary Management System (parallel: false)
+- [ ] #6 - Learning Interface (parallel: false)
+- [ ] #7 - Review System (parallel: false)
+- [ ] #8 - Progress Tracking & Analytics (parallel: false)
+- [ ] #9 - Performance Optimization & Testing (parallel: false)
 
 Total tasks: 8
 Parallel tasks: 1
