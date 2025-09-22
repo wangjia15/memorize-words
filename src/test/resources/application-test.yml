@@ -1,0 +1,55 @@
+spring:
+  # H2 Database configuration for testing
+  datasource:
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: password
+
+  # JPA/Hibernate configuration for testing
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    database-platform: org.hibernate.dialect.H2Dialect
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        use_sql_comments: true
+
+  # Disable security for integration tests (can be overridden per test)
+  security:
+    enabled: false
+
+  # Logging configuration for testing
+  logging:
+    level:
+      com.memorizewords: DEBUG
+      org.springframework.web: DEBUG
+      org.springframework.security: DEBUG
+      org.hibernate.SQL: DEBUG
+      org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+
+# Server configuration for testing
+server:
+  port: 0 # Random port for testing
+  servlet:
+    context-path: /
+
+# Management endpoints for testing
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: always
+
+# Test-specific properties
+test:
+  data:
+    cleanup: true
+    sample-data: true
+  security:
+    disable-csrf: true
