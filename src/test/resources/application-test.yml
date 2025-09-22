@@ -17,9 +17,17 @@ spring:
         format_sql: true
         use_sql_comments: true
 
-  # Disable security for integration tests (can be overridden per test)
+  # Security configuration for testing
   security:
-    enabled: false
+    user:
+      name: testuser
+      password: testpass
+    filter:
+      order: 10
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
+      - org.springframework.boot.actuate.autoconfigure.security.servlet.ManagementWebSecurityAutoConfiguration
 
   # Logging configuration for testing
   logging:

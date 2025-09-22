@@ -1,6 +1,7 @@
 package com.memorizewords.integration;
 
 import com.memorizewords.config.TestConfig;
+import com.memorizewords.config.TestSecurityConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -19,7 +20,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
  */
 @SpringBootTest
 @AutoConfigureMockMvc
-@Import(TestConfig.class)
+@Import({TestConfig.class, TestSecurityConfig.class})
 @ActiveProfiles("test")
 @Transactional
 public abstract class BaseIntegrationTest {

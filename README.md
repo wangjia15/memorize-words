@@ -17,16 +17,17 @@ A modern vocabulary learning application built with Spring Boot 3.x, featuring s
 - **Spring Boot 3.2.x** - Core framework
 - **Spring Security 6.x** - Authentication and authorization
 - **Spring Data JPA** - Database access layer
-- **MySQL 8.0+** - Primary database
-- **H2 Database** - Testing database
+- **MySQL 8.0+** - Primary database (production)
+- **H2 Database** - Development and testing database
 - **Maven** - Build and dependency management
 - **Java 17+** - Programming language
 
 ### Frontend
-- **Thymeleaf** - Server-side templating
+- **React** - Frontend framework
+- **TypeScript** - Type-safe JavaScript
 - **Tailwind CSS** - Utility-first CSS framework
 - **shadcn/ui** - Component library
-- **Vanilla JavaScript** - Interactive elements
+- **Vite** - Build tool and development server
 
 ## Quick Start
 
@@ -34,10 +35,10 @@ A modern vocabulary learning application built with Spring Boot 3.x, featuring s
 
 - **Java 17+** installed
 - **Maven 3.6+** installed
-- **MySQL 8.0+** installed and running
 - **Node.js 16+** (for frontend build tools)
+- **MySQL 8.0+** (for production deployment)
 
-### Setup Instructions
+### Development Setup
 
 1. **Clone the repository**
    ```bash
@@ -45,69 +46,56 @@ A modern vocabulary learning application built with Spring Boot 3.x, featuring s
    cd memorize-words
    ```
 
-2. **Set up the database**
-   ```sql
-   CREATE DATABASE memorize_words;
-   CREATE USER 'memorize_user'@'localhost' IDENTIFIED BY 'your_password';
-   GRANT ALL PRIVILEGES ON memorize_words.* TO 'memorize_user'@'localhost';
-   FLUSH PRIVILEGES;
-   ```
-
-3. **Configure application properties**
-
-   Copy `src/main/resources/application.yml.example` to `src/main/resources/application.yml` and update:
-   ```yaml
-   spring:
-     datasource:
-       url: jdbc:mysql://localhost:3306/memorize_words
-       username: memorize_user
-       password: your_password
-   ```
-
-4. **Build and run the application**
+2. **Backend setup**
    ```bash
    # Build the project
    mvn clean install
 
-   # Run the application
+   # Run the application (development mode)
    mvn spring-boot:run
    ```
 
-5. **Access the application**
-
-   Open your browser and navigate to: `http://localhost:8080`
-
-### Development Setup
-
-1. **Frontend development setup**
+3. **Frontend setup**
    ```bash
-   # Install frontend dependencies
+   # Navigate to frontend directory
+   cd frontend
+
+   # Install dependencies
    npm install
 
-   # Start development server (for frontend-only development)
+   # Start development server
    npm run dev
    ```
 
-2. **Running tests**
-   ```bash
-   # Run all tests
-   mvn test
+4. **Access the application**
 
-   # Run only unit tests
-   mvn test -Dtest=*Unit*
+   - Backend API: `http://localhost:8080`
+   - Frontend: `http://localhost:3000`
+   - Health Check: `http://localhost:8080/api/health`
+   - H2 Console: `http://localhost:8080/h2-console` (development only)
 
-   # Run only integration tests
-   mvn test -Dtest=*Integration*
-   ```
+### Running Tests
 
-3. **Building for production**
-   ```bash
-   # Build optimized production version
-   mvn clean package -Pprod
+```bash
+# Run all tests
+mvn test
 
-   # Run the production JAR
-   java -jar target/memorize-words-1.0.0-SNAPSHOT.jar
-   ```
+# Run only unit tests
+mvn test -Dtest=*Unit*
+
+# Run only integration tests
+mvn test -Dtest=*Integration*
+```
+
+### Building for Production
+
+```bash
+# Build optimized production version
+mvn clean package -Pprod
+
+# Run the production JAR
+java -jar target/memorize-words-1.0.0-SNAPSHOT.jar
+```
 
 ## Project Structure
 
@@ -118,17 +106,13 @@ src/
 │   │   ├── MemorizeWordsApplication.java    # Main application class
 │   │   ├── config/                          # Configuration classes
 │   │   ├── controller/                      # REST controllers
-│   │   ├── service/                         # Business logic
-│   │   ├── repository/                      # Data access layer
-│   │   ├── entity/                          # JPA entities
-│   │   ├── dto/                             # Data transfer objects
-│   │   └── exception/                       # Exception handlers
+│   │   ├── exception/                       # Exception handling
+│   │   └── service/                         # Business logic (to be implemented)
 │   └── resources/
 │       ├── application.yml                  # Main configuration
 │       ├── application-dev.yml              # Development profile
 │       ├── application-prod.yml             # Production profile
-│       ├── templates/                       # Thymeleaf templates
-│       └── static/                          # Static assets
+│       └── logback-spring.xml               # Logging configuration
 └── test/
     ├── java/com/memorizewords/
     │   ├── unit/                            # Unit tests
@@ -138,38 +122,25 @@ src/
     └── resources/
         ├── application-test.yml             # Test configuration
         └── data/                            # Test data files
+
+frontend/                                       # React frontend
+├── src/
+│   ├── components/                           # React components
+│   ├── pages/                               # Page components
+│   ├── hooks/                               # Custom React hooks
+│   └── utils/                               # Utility functions
+├── public/                                  # Static assets
+└── package.json                            # Frontend dependencies
 ```
 
 ## API Endpoints
 
 ### Health Check
-- `GET /actuator/health` - Application health status
+- `GET /api/health` - Basic application health status
+- `GET /api/health/detailed` - Detailed health information with system metrics
+- `GET /actuator/health` - Spring Boot health endpoint
 - `GET /actuator/info` - Application information
 - `GET /actuator/metrics` - Application metrics
-
-### Authentication
-- `POST /api/auth/register` - User registration
-- `POST /api/auth/login` - User login
-- `POST /api/auth/logout` - User logout
-
-### Vocabulary Management
-- `GET /api/words` - List all words
-- `POST /api/words` - Add new word
-- `GET /api/words/{id}` - Get word details
-- `PUT /api/words/{id}` - Update word
-- `DELETE /api/words/{id}` - Delete word
-
-### Collections
-- `GET /api/collections` - List user collections
-- `POST /api/collections` - Create new collection
-- `GET /api/collections/{id}` - Get collection details
-- `PUT /api/collections/{id}` - Update collection
-- `DELETE /api/collections/{id}` - Delete collection
-
-### Learning Progress
-- `GET /api/progress` - Get learning progress
-- `POST /api/progress/review` - Record review session
-- `GET /api/progress/stats` - Get learning statistics
 
 ## Configuration
 
@@ -177,29 +148,9 @@ src/
 
 The application supports multiple environment profiles:
 
-- **dev** - Development environment with hot reload
-- **prod** - Production environment with optimizations
-- **test** - Testing environment with H2 database
-
-### Database Configuration
-
-The application uses MySQL as the primary database. Key configuration options:
-
-```yaml
-spring:
-  datasource:
-    url: jdbc:mysql://localhost:3306/memorize_words
-    username: memorize_user
-    password: your_password
-    driver-class-name: com.mysql.cj.jdbc.Driver
-  jpa:
-    hibernate:
-      ddl-auto: update
-    show-sql: true
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.MySQL8Dialect
-```
+- **dev** - Development environment with H2 database and debug logging
+- **prod** - Production environment with MySQL database and optimized logging
+- **test** - Testing environment with H2 in-memory database and disabled security
 
 ## Testing
 
@@ -208,30 +159,62 @@ spring:
 The project includes comprehensive test coverage:
 
 - **Unit Tests**: Test individual components in isolation
-- **Integration Tests**: Test component interactions
-- **Controller Tests**: Test API endpoints
-- **Repository Tests**: Test database operations
+- **Integration Tests**: Test component interactions with full Spring context
+- **Controller Tests**: Test API endpoints with MockMvc
 
-### Running Tests
+### Test Configuration
 
-```bash
-# Run all tests
-mvn test
+- **H2 Database**: In-memory database for isolated testing
+- **Test Security**: Disabled security for test endpoints
+- **Test Data**: `TestDataBuilder` utility for generating test data
+- **Transaction Management**: Automatic cleanup with `@Transactional`
 
-# Run specific test class
-mvn test -Dtest=MemorizeWordsApplicationTest
+## Current Implementation Status
 
-# Run tests with coverage
-mvn clean verify jacoco:report
-```
+### ✅ Completed Features
+- Spring Boot 3.2.x project setup
+- Health check endpoints (`/api/health`, `/api/health/detailed`)
+- Global exception handling
+- CORS configuration for frontend integration
+- Comprehensive test infrastructure (21 passing tests)
+- Development and production environment configurations
+- Logging configuration with logback
+- React frontend setup with shadcn/ui
+- Maven build configuration
 
-### Test Data Management
+### 🚧 In Progress
+- User authentication system
+- Vocabulary management endpoints
+- Spaced repetition algorithm implementation
+- Database schema and entities
+- Frontend-backend integration
 
-Test data is managed through:
-- `TestDataBuilder` utility class for generating test data
-- H2 in-memory database for isolated testing
-- `@Transactional` annotation for automatic cleanup
-- Test-specific configuration in `application-test.yml`
+### 📋 Planned Features
+- Word collections and categories
+- Learning progress tracking
+- Multiple study modes
+- Advanced analytics dashboard
+- Offline mode support
+- Mobile app development
+
+## Development Guidelines
+
+### Code Quality
+- Follow Spring Boot best practices
+- Maintain test coverage above 80%
+- Use JavaDoc for public APIs
+- Follow existing code style and structure
+- Write comprehensive tests for new features
+
+### Git Workflow
+- Create feature branches from `main`
+- Use descriptive commit messages
+- Run tests before committing
+- Keep pull requests focused and small
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## Contributing
 
@@ -240,34 +223,6 @@ Test data is managed through:
 3. Commit your changes (`git commit -m 'Add some amazing feature'`)
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
-
-### Development Guidelines
-
-- Follow Spring Boot best practices
-- Write comprehensive tests for new features
-- Maintain code coverage above 80%
-- Use JavaDoc for public APIs
-- Follow the existing code style and structure
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## Support
-
-For support and questions:
-- Create an issue in the GitHub repository
-- Check the [documentation](docs/)
-- Review existing issues and discussions
-
-## Roadmap
-
-- [ ] Mobile app development
-- [ ] Offline mode support
-- [ ] Advanced analytics dashboard
-- [ ] Multi-language support
-- [ ] Social learning features
-- [ ] AI-powered vocabulary recommendations
 
 ---
 

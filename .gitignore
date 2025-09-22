@@ -10,7 +10,7 @@
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/
 
-# Package Files #
+# Package Files
 *.jar
 *.war
 *.nar
@@ -115,6 +115,12 @@ coverage/
 dist/
 build/
 
+# React and Vite specific
+frontend/dist/
+frontend/build/
+frontend/.vite/
+*.local
+
 # IDE
 *.swp
 *.swo
@@ -133,3 +139,125 @@ test-results/
 
 # Docker
 .dockerignore
+
+# Logs
+logs/
+*.log.*
+
+# Runtime data
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage directory used by tools like istanbul
+coverage/
+*.lcov
+
+# nyc test coverage
+.nyc_output
+
+# Dependency directories
+frontend/node_modules/
+frontend/jspm_packages/
+
+# Optional npm cache directory
+frontend/.npm
+
+# Optional eslint cache
+frontend/.eslintcache
+
+# Optional REPL history
+frontend/.node_repl_history
+
+# Output of 'npm pack'
+*.tgz
+
+# Yarn Integrity file
+frontend/.yarn-integrity
+
+# dotenv environment variables file
+frontend/.env
+frontend/.env.test
+frontend/.env.production
+
+# parcel-bundler cache (https://parceljs.org/)
+frontend/.cache
+frontend/.parcel-cache
+
+# next.js build output
+frontend/.next
+
+# nuxt.js build output
+frontend/.nuxt
+
+# vuepress build output
+frontend.vuepress/dist
+
+# Serverless directories
+.serverless/
+
+# FuseBox cache
+.fusebox/
+
+# DynamoDB Local files
+.dynamodb/
+
+# TernJS port file
+.tern-port
+
+# Stores VSCode versions used for testing VSCode extensions
+.vscode-test
+
+# yarn v2
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+.yarn/install-state.gz
+.pnp.*
+
+# Spring Boot actuator endpoints (sensitive data)
+actuator/
+
+# Database files
+*.sql
+*.mdb
+*.accdb
+
+# Configuration files with secrets
+application-secret.yml
+application-secret.yaml
+application-secret.properties
+
+# Temporary upload files
+uploads/
+tmp/
+
+# Cache directories
+.cache/
+.cache-loader/
+
+# Session files
+.sess/
+
+# Lock files
+package-lock.json
+yarn.lock
+
+# Development database files
+dev-db.*
+test-db.*
+
+# Backup files
+*.bak
+*.backup
+*.swp
+*.swo
+
+# OS specific files
+Thumbs.db
+desktop.ini
+
+# Project specific
+.claude/epics/memorize-words/updates/
+logs/
