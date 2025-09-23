@@ -6,6 +6,9 @@ import { Volume2, CheckCircle, XCircle } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { LearningWord, LearningMode } from "@/types/learning";
 import { FlashcardMode } from "./FlashcardMode";
+import { MultipleChoiceMode } from "./MultipleChoiceMode";
+import { TypingMode } from "./TypingMode";
+import { PronunciationMode } from "./PronunciationMode";
 import { cn } from "@/lib/utils";
 
 interface WordCardProps {
@@ -56,125 +59,7 @@ export const WordCard: React.FC<WordCardProps> = ({
     onAnswer(correct, answer);
   };
 
-  const renderMultipleChoiceMode = () => {
-    const [selectedOption, setSelectedOption] = useState<string | null>(null);
-    // Generate mock options for demo - in real app this would come from backend
-    const options = [word.word, 'option1', 'option2', 'option3'];
 
-    const handleOptionSelect = (option: string) => {
-      setSelectedOption(option);
-      handleSubmitAnswer(option);
-    };
-
-    return (
-      <div className="h-full flex flex-col justify-center">
-        <div className="text-center mb-8">
-          <h2 className="text-2xl font-bold mb-4">What does this mean?</h2>
-          <p className="text-xl bg-muted p-4 rounded-lg">{word.definition}</p>
-        </div>
-
-        <div className="grid grid-cols-2 gap-4">
-          {options.map((option, index) => (
-            <Button
-              key={index}
-              variant={selectedOption === option ? "default" : "outline"}
-              className={cn(
-                "h-16 text-lg",
-                showResult && option === word.word && "bg-green-100 border-green-500",
-                showResult && selectedOption === option && option !== word.word && "bg-red-100 border-red-500"
-              )}
-              onClick={() => handleOptionSelect(option)}
-              disabled={showResult}
-            >
-              {option}
-            </Button>
-          ))}
-        </div>
-
-        {showResult && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mt-6 text-center"
-          >
-            <p className={cn(
-              "text-lg font-semibold",
-              isCorrect ? "text-green-600" : "text-red-600"
-            )}>
-              {isCorrect ? "Correct!" : `Incorrect. The answer is: ${word.word}`}
-            </p>
-          </motion.div>
-        )}
-      </div>
-    );
-  };
-
-  const renderTypingMode = () => {
-    return (
-      <div className="h-full flex flex-col justify-center">
-        <div className="text-center mb-8">
-          <h2 className="text-2xl font-bold mb-4">Type the word</h2>
-          <p className="text-xl bg-muted p-4 rounded-lg">{word.definition}</p>
-          {word.example && (
-            <p className="text-sm text-muted-foreground mt-4 italic">
-              Example: "{word.example}"
-            </p>
-          )}
-        </div>
-
-        <div className="space-y-4">
-          <input
-            type="text"
-            value={userAnswer}
-            onChange={(e) => setUserAnswer(e.target.value)}
-            className="w-full p-4 text-xl border rounded-lg text-center"
-            placeholder="Type your answer..."
-            disabled={showResult}
-            onKeyPress={(e) => {
-              if (e.key === 'Enter' && userAnswer.trim()) {
-                handleSubmitAnswer(userAnswer);
-              }
-            }}
-          />
-
-          {!showResult && (
-            <Button
-              onClick={() => handleSubmitAnswer(userAnswer)}
-              disabled={!userAnswer.trim()}
-              className="w-full"
-            >
-              Submit Answer
-            </Button>
-          )}
-
-          {showHints && !showResult && userAnswer.length > 0 && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="text-center text-sm text-muted-foreground"
-            >
-              First letter: {word.word.charAt(0).toUpperCase()}
-            </motion.div>
-          )}
-        </div>
-
-        {showResult && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mt-6 text-center"
-          >
-            <p className={cn(
-              "text-lg font-semibold",
-              isCorrect ? "text-green-600" : "text-red-600"
-            )}>
-              {isCorrect ? "Correct!" : `Incorrect. The answer is: ${word.word}`}
-            </p>
-          </motion.div>
-        )}
-      </div>
-    );
-  };
 
   const renderLearningMode = () => {
     switch (mode) {
@@ -191,35 +76,35 @@ export const WordCard: React.FC<WordCardProps> = ({
         );
 
       case LearningMode.MULTIPLE_CHOICE:
-        return renderMultipleChoiceMode();
+        return (
+          <MultipleChoiceMode
+            word={word}
+            onAnswer={handleSubmitAnswer}
+            showResult={showResult}
+            isCorrect={isCorrect}
+          />
+        );
 
       case LearningMode.TYPING:
-        return renderTypingMode();
+        return (
+          <TypingMode
+            word={word}
+            onAnswer={handleSubmitAnswer}
+            showResult={showResult}
+            isCorrect={isCorrect}
+            showHints={showHints}
+          />
+        );
 
       case LearningMode.PRONUNCIATION:
         return (
-          <div className="h-full flex flex-col justify-center items-center">
-            <h2 className="text-2xl font-bold mb-4">Pronunciation Practice</h2>
-            <p className="text-4xl font-bold mb-4">{word.word}</p>
-            <p className="text-lg text-muted-foreground mb-6">/{word.pronunciation || word.word}/</p>
-            <Button
-              onClick={playPronunciation}
-              className="mb-6"
-              disabled={!enableAudio}
-            >
-              <Volume2 className="h-4 w-4 mr-2" />
-              Play Pronunciation
-            </Button>
-            <p className="text-lg mb-6">{word.definition}</p>
-            <div className="flex gap-4">
-              <Button variant="outline" onClick={() => onAnswer(false)}>
-                Need Practice
-              </Button>
-              <Button onClick={() => onAnswer(true)}>
-                Got It!
-              </Button>
-            </div>
-          </div>
+          <PronunciationMode
+            word={word}
+            onAnswer={(isCorrect, confidence) => onAnswer(isCorrect)}
+            showResult={showResult}
+            isCorrect={isCorrect}
+            enableSpeechRecognition={enableAudio}
+          />
         );
 
       default:
