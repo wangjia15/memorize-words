@@ -1,5 +1,6 @@
 package com.memorizewords.dto.response;
 
+import com.memorizewords.enums.ListType;
 import lombok.Data;
 
 import java.time.LocalDateTime;

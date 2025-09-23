@@ -1,5 +1,7 @@
 package com.memorizewords.dto.response;
 
+import com.memorizewords.enums.DifficultyLevel;
+import com.memorizewords.enums.WordCategory;
 import lombok.Data;
 
 import java.time.LocalDateTime;

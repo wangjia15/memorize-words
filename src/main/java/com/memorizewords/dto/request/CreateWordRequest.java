@@ -1,8 +1,12 @@
 package com.memorizewords.dto.request;
 
+import com.memorizewords.enums.DifficultyLevel;
+import com.memorizewords.enums.WordCategory;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
+
+import java.util.Set;
 
 /**
  * Request DTO for creating a new word.
@@ -30,4 +34,8 @@ public class CreateWordRequest {
     private DifficultyLevel difficulty = DifficultyLevel.BEGINNER;
 
     private Boolean isPublic = false;
+
+    private Set<WordCategory> categories = Set.of();
+
+    private Set<String> tags = Set.of();
 }

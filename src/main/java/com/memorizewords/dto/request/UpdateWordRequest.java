@@ -1,7 +1,11 @@
 package com.memorizewords.dto.request;
 
+import com.memorizewords.enums.DifficultyLevel;
+import com.memorizewords.enums.WordCategory;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
+
+import java.util.Set;
 
 /**
  * Request DTO for updating an existing word.
@@ -21,4 +25,8 @@ public class UpdateWordRequest {
     private DifficultyLevel difficulty;
 
     private Boolean isPublic;
+
+    private Set<WordCategory> categories;
+
+    private Set<String> tags;
 }

@@ -1,5 +1,6 @@
 package com.memorizewords.dto.request;
 
+import com.memorizewords.enums.DifficultyLevel;
 import lombok.Data;
 
 /**
@@ -21,4 +22,6 @@ public class WordSearchCriteria {
     private Boolean isPublic;
 
     private String createdBy;
+
+    private Long createdByUserId;
 }
