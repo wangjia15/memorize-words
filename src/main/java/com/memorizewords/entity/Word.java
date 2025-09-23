@@ -3,8 +3,10 @@ package com.memorizewords.entity;
 import com.memorizewords.enum.DifficultyLevel;
 import com.memorizewords.enum.WordCategory;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -18,6 +20,8 @@ import java.util.Set;
 @Table(name = "words")
 @Data
 @EqualsAndHashCode(callSuper = true)
+@NoArgsConstructor
+@AllArgsConstructor
 public class Word extends BaseEntity {
 
     @Id
