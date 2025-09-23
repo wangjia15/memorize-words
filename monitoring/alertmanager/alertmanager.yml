@@ -1,0 +1,92 @@
+# AlertManager configuration for Memorize Words application
+global:
+  smtp_smarthost: 'localhost:587'
+  smtp_from: 'alertmanager@memorize-words.com'
+  smtp_auth_username: 'alertmanager@memorize-words.com'
+  smtp_auth_password: 'password'
+
+# Default route for all alerts
+route:
+  group_by: ['alertname', 'severity']
+  group_wait: 10s
+  group_interval: 10s
+  repeat_interval: 1h
+  receiver: 'web.hook'
+
+# Routes based on severity
+routes:
+  - match:
+      severity: critical
+    receiver: 'critical-alerts'
+    continue: true
+
+  - match:
+      severity: warning
+    receiver: 'warning-alerts'
+    continue: true
+
+  - match:
+      alertname: 'MemorizeWordsApplicationDown'
+    receiver: 'critical-alerts'
+    continue: true
+
+  - match_re:
+      service: memorize-words
+    receiver: 'memorize-words-team'
+
+# Notification receivers
+receivers:
+  - name: 'web.hook'
+    webhook_configs:
+      - url: 'http://localhost:5001/'
+
+  - name: 'critical-alerts'
+    email_configs:
+      - to: 'team@memorize-words.com'
+        subject: 'CRITICAL: Memorize Words Alert - {{ .GroupLabels.alertname }}'
+        body: |
+          {{ range .Alerts }}
+          Alert: {{ .Annotations.summary }}
+          Description: {{ .Annotations.description }}
+          Severity: {{ .Labels.severity }}
+          Starts at: {{ .StartsAt }}
+          {{ end }}
+
+  - name: 'warning-alerts'
+    email_configs:
+      - to: 'team@memorize-words.com'
+        subject: 'WARNING: Memorize Words Alert - {{ .GroupLabels.alertname }}'
+        body: |
+          {{ range .Alerts }}
+          Alert: {{ .Annotations.summary }}
+          Description: {{ .Annotations.description }}
+          Severity: {{ .Labels.severity }}
+          Starts at: {{ .StartsAt }}
+          {{ end }}
+
+  - name: 'memorize-words-team'
+    slack_configs:
+      - api_url: 'SLACK_WEBHOOK_URL'
+        channel: '#memorize-words-alerts'
+        title: 'Memorize Words Alert'
+        text: |
+          {{ range .Alerts }}
+          *Alert:* {{ .Annotations.summary }}
+          *Description:* {{ .Annotations.description }}
+          *Severity:* {{ .Labels.severity }}
+          *Starts:* {{ .StartsAt }}
+          {{ end }}
+
+# Inhibit rules to prevent alert spam
+inhibit_rules:
+  - source_match:
+      severity: 'critical'
+    target_match:
+      severity: 'warning'
+    equal: ['alertname', 'dev', 'instance']
+
+  - source_match:
+      alertname: 'MemorizeWordsApplicationDown'
+    target_match_re:
+      alertname: '.*'
+    equal: ['instance']

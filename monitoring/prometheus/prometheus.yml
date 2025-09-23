@@ -1,0 +1,47 @@
+# Prometheus configuration for Memorize Words application
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+rule_files:
+  - "alert_rules.yml"
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          - alertmanager:9093
+
+scrape_configs:
+  # Memorize Words application metrics
+  - job_name: 'memorize-words'
+    static_configs:
+      - targets: ['localhost:8080']
+    metrics_path: '/actuator/prometheus'
+    scrape_interval: 15s
+    scrape_timeout: 10s
+
+  # Spring Boot Actuator metrics
+  - job_name: 'spring-actuator'
+    static_configs:
+      - targets: ['localhost:8080']
+    metrics_path: '/actuator/prometheus'
+    scrape_interval: 30s
+
+  # Database metrics (if available)
+  - job_name: 'mysql'
+    static_configs:
+      - targets: ['localhost:9104']
+    scrape_interval: 30s
+
+  # Redis metrics (if available)
+  - job_name: 'redis'
+    static_configs:
+      - targets: ['localhost:9121']
+    scrape_interval: 30s
+
+  # System metrics (node exporter)
+  - job_name: 'node'
+    static_configs:
+      - targets: ['localhost:9100']
+    scrape_interval: 30s

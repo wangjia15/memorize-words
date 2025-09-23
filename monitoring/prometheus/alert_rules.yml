@@ -1,0 +1,145 @@
+# Alert rules for Memorize Words application
+groups:
+  - name: memorize-words-alerts
+    rules:
+      # Application Health
+      - alert: MemorizeWordsApplicationDown
+        expr: up{job='memorize-words'} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Memorize Words application is down"
+          description: "Memorize Words application has been down for more than 1 minute"
+
+      # Performance Alerts
+      - alert: HighResponseTime
+        expr: histogram_quantile(0.95, rate(http_server_requests_seconds_bucket[5m])) > 2
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High response time detected"
+          description: "95th percentile response time is above 2 seconds for 2 minutes"
+
+      - alert: VeryHighResponseTime
+        expr: histogram_quantile(0.95, rate(http_server_requests_seconds_bucket[5m])) > 5
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Very high response time detected"
+          description: "95th percentile response time is above 5 seconds for 1 minute"
+
+      # Memory Alerts
+      - alert: HighMemoryUsage
+        expr: jvm_memory_usage_percent > 80
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High memory usage detected"
+          description: "JVM memory usage is above 80% for 5 minutes"
+
+      - alert: CriticalMemoryUsage
+        expr: jvm_memory_usage_percent > 90
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Critical memory usage detected"
+          description: "JVM memory usage is above 90% for 2 minutes"
+
+      # Database Alerts
+      - alert: HighDatabaseConnections
+        expr: database_connections_active > 15
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High database connection usage"
+          description: "Database active connections are above 15 for 5 minutes"
+
+      - alert: DatabaseConnectionPoolExhausted
+        expr: database_connections_threads_awaiting > 5
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Database connection pool exhausted"
+          description: "Threads waiting for database connections are above 5 for 1 minute"
+
+      - alert: HighSlowQueryRate
+        expr: rate(database_slow_queries_total[5m]) > 1
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High slow query rate detected"
+          description: "Database slow query rate is above 1 per second for 5 minutes"
+
+      - alert: CriticalSlowQueryRate
+        expr: rate(database_slow_queries_total[5m]) > 3
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Critical slow query rate detected"
+          description: "Database slow query rate is above 3 per second for 2 minutes"
+
+      # Error Rate Alerts
+      - alert: HighErrorRate
+        expr: rate(http_server_requests_seconds_count{status=~'5..'}[5m]) > 0.1
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High HTTP 5xx error rate"
+          description: "HTTP 5xx error rate is above 10% for 5 minutes"
+
+      - alert: CriticalErrorRate
+        expr: rate(http_server_requests_seconds_count{status=~'5..'}[5m]) > 0.2
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Critical HTTP 5xx error rate"
+          description: "HTTP 5xx error rate is above 20% for 2 minutes"
+
+      # Business Logic Alerts
+      - alert: ReviewSessionPerformanceDegraded
+        expr: histogram_quantile(0.95, rate(review_session_duration_seconds_bucket[5m])) > 10
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Review session performance degraded"
+          description: "95th percentile review session duration is above 10 seconds for 5 minutes"
+
+      - alert: LowCacheHitRate
+        expr: rate(cache_hits_total[5m]) / (rate(cache_hits_total[5m]) + rate(cache_misses_total[5m])) < 0.7
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Low cache hit rate detected"
+          description: "Cache hit rate is below 70% for 10 minutes"
+
+      # System Health Alerts
+      - alert: HighThreadCount
+        expr: jvm_threads_live > 200
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High thread count detected"
+          description: "JVM live thread count is above 200 for 5 minutes"
+
+      - alert: FrequentGarbageCollection
+        expr: rate(jvm_gc_collection_time_total[5m]) > 1000
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Frequent garbage collection detected"
+          description: "Garbage collection time is above 1 second per 5 minutes for 5 minutes"
