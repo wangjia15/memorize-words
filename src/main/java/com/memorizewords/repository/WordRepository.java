@@ -41,4 +41,8 @@ public interface WordRepository extends JpaRepository<Word, Long>, JpaSpecificat
     Page<Word> searchByTerm(@Param("searchTerm") String searchTerm, Pageable pageable);
 
     boolean existsByWordAndLanguage(String word, String language);
+
+    long countByCreatedBy(User user);
+
+    long countByLanguageAndIsPublicTrue(String language);
 }
