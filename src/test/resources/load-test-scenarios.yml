@@ -1,0 +1,377 @@
+# Load Test Scenarios Configuration
+# Defines various load testing scenarios for the memorize-words application
+
+scenarios:
+  # Basic API performance scenarios
+  basic_api:
+    name: "Basic API Performance"
+    description: "Test basic API endpoints under normal load"
+    concurrent_users: 50
+    duration: 60
+    ramp_up: 10
+    requests_per_second: 100
+    scenarios:
+      - endpoint: "/api/health"
+        method: "GET"
+        weight: 20
+        expected_status: 200
+      - endpoint: "/api/auth/register"
+        method: "POST"
+        weight: 10
+        expected_status: 201
+        payload: |
+          {
+            "username": "testuser_${__RandomString(8)}",
+            "email": "test_${__RandomString(8)}@example.com",
+            "password": "password123"
+          }
+      - endpoint: "/api/auth/login"
+        method: "POST"
+        weight: 15
+        expected_status: 200
+        payload: |
+          {
+            "username": "testuser",
+            "password": "password123"
+          }
+
+  # Vocabulary management scenarios
+  vocabulary_management:
+    name: "Vocabulary Management"
+    description: "Test vocabulary CRUD operations"
+    concurrent_users: 100
+    duration: 120
+    ramp_up: 20
+    requests_per_second: 150
+    scenarios:
+      - endpoint: "/api/words"
+        method: "POST"
+        weight: 25
+        expected_status: 201
+        payload: |
+          {
+            "word": "${__RandomString(10)}",
+            "definition": "Definition of ${__RandomString(10)}",
+            "partOfSpeech": "noun",
+            "difficulty": 0.5,
+            "frequency": 1000
+          }
+      - endpoint: "/api/words/search"
+        method: "GET"
+        weight: 30
+        expected_status: 200
+        params:
+          query: "test"
+          page: 0
+          size: 20
+      - endpoint: "/api/vocabulary"
+        method: "GET"
+        weight: 20
+        expected_status: 200
+        params:
+          page: 0
+          size: 50
+      - endpoint: "/api/vocabulary/${__Random(1,1000)}"
+        method: "DELETE"
+        weight: 10
+        expected_status: 204
+
+  # Spaced repetition scenarios
+  spaced_repetition:
+    name: "Spaced Repetition System"
+    description: "Test spaced repetition review operations"
+    concurrent_users: 200
+    duration: 180
+    ramp_up: 30
+    requests_per_second: 200
+    scenarios:
+      - endpoint: "/api/reviews/start"
+        method: "POST"
+        weight: 15
+        expected_status: 200
+        payload: |
+          {
+            "mode": "DUE_CARDS",
+            "limit": 20
+          }
+      - endpoint: "/api/reviews/${__Random(1,1000)}/submit"
+        method: "POST"
+        weight: 25
+        expected_status: 200
+        payload: |
+          {
+            "cardId": ${__Random(1,1000)},
+            "outcome": "GOOD",
+            "responseTime": 3000
+          }
+      - endpoint: "/api/reviews/due-cards"
+        method: "GET"
+        weight: 20
+        expected_status: 200
+        params:
+          limit: 50
+      - endpoint: "/api/reviews/statistics"
+        method: "GET"
+        weight: 15
+        expected_status: 200
+      - endpoint: "/api/reviews/progress"
+        method: "GET"
+        weight: 10
+        expected_status: 200
+
+  # High load scenarios
+  high_load:
+    name: "High Load Stress Test"
+    description: "Test system under heavy load (1000+ concurrent users)"
+    concurrent_users: 1000
+    duration: 300
+    ramp_up: 60
+    requests_per_second: 500
+    scenarios:
+      - endpoint: "/api/health"
+        method: "GET"
+        weight: 10
+        expected_status: 200
+      - endpoint: "/api/words/search"
+        method: "GET"
+        weight: 30
+        expected_status: 200
+        params:
+          query: "test"
+          page: 0
+          size: 20
+      - endpoint: "/api/vocabulary"
+        method: "GET"
+        weight: 20
+        expected_status: 200
+        params:
+          page: 0
+          size: 50
+      - endpoint: "/api/reviews/due-cards"
+        method: "GET"
+        weight: 15
+        expected_status: 200
+        params:
+          limit: 50
+      - endpoint: "/api/reviews/statistics"
+        method: "GET"
+        weight: 10
+        expected_status: 200
+      - endpoint: "/api/auth/validate-token"
+        method: "POST"
+        weight: 15
+        expected_status: 200
+        payload: |
+          {
+            "token": "Bearer ${__RandomString(50)}"
+          }
+
+  # Memory leak detection scenarios
+  memory_leak:
+    name: "Memory Leak Detection"
+    description: "Long-running test to detect memory leaks"
+    concurrent_users: 100
+    duration: 1800  # 30 minutes
+    ramp_up: 30
+    requests_per_second: 50
+    memory_monitoring: true
+    scenarios:
+      - endpoint: "/api/words"
+        method: "POST"
+        weight: 20
+        expected_status: 201
+        payload: |
+          {
+            "word": "${__RandomString(15)}",
+            "definition": "Definition of ${__RandomString(30)}",
+            "partOfSpeech": "noun",
+            "difficulty": ${__Random(1,10) / 10.0},
+            "frequency": ${__Random(1,5000)}
+          }
+      - endpoint: "/api/words/search"
+        method: "GET"
+        weight: 30
+        expected_status: 200
+        params:
+          query: "${__RandomString(5)}"
+          page: 0
+          size: 100
+      - endpoint: "/api/vocabulary"
+        method: "GET"
+        weight: 25
+        expected_status: 200
+        params:
+          page: 0
+          size: 200
+      - endpoint: "/api/reviews/start"
+        method: "POST"
+        weight: 15
+        expected_status: 200
+        payload: |
+          {
+            "mode": "DUE_CARDS",
+            "limit": 50
+          }
+      - endpoint: "/api/reviews/${__Random(1,5000)}/submit"
+        method: "POST"
+        weight: 10
+        expected_status: 200
+        payload: |
+          {
+            "cardId": ${__Random(1,5000)},
+            "outcome": "${__RandomFrom(GOOD,EASY,HARD,AGAIN)}",
+            "responseTime": ${__Random(1000,10000)}
+          }
+
+  # Database performance scenarios
+  database_performance:
+    name: "Database Performance"
+    description: "Test database operations under load"
+    concurrent_users: 150
+    duration: 240
+    ramp_up: 30
+    requests_per_second: 200
+    database_monitoring: true
+    scenarios:
+      - endpoint: "/api/words/bulk-import"
+        method: "POST"
+        weight: 10
+        expected_status: 200
+        payload: |
+          {
+            "words": [
+              {
+                "word": "${__RandomString(8)}",
+                "definition": "Definition ${__RandomString(20)}",
+                "partOfSpeech": "noun",
+                "difficulty": 0.5,
+                "frequency": 1000
+              },
+              {
+                "word": "${__RandomString(8)}",
+                "definition": "Definition ${__RandomString(20)}",
+                "partOfSpeech": "verb",
+                "difficulty": 0.7,
+                "frequency": 2000
+              }
+            ]
+          }
+      - endpoint: "/api/vocabulary/statistics"
+        method: "GET"
+        weight: 20
+        expected_status: 200
+      - endpoint: "/api/reviews/history"
+        method: "GET"
+        weight: 25
+        expected_status: 200
+        params:
+          page: 0
+          size: 100
+      - endpoint: "/api/users/progress"
+        method: "GET"
+        weight: 15
+        expected_status: 200
+      - endpoint: "/api/words/duplicates/check"
+        method: "POST"
+        weight: 15
+        expected_status: 200
+        payload: |
+          {
+            "words": ["test", "example", "word"]
+          }
+      - endpoint: "/api/vocabulary/export"
+        method: "GET"
+        weight: 15
+        expected_status: 200
+
+# Performance thresholds
+thresholds:
+  basic_api:
+    max_response_time_ms: 500
+    min_throughput_per_second: 50
+    max_error_rate: 0.02
+
+  vocabulary_management:
+    max_response_time_ms: 1000
+    min_throughput_per_second: 100
+    max_error_rate: 0.01
+
+  spaced_repetition:
+    max_response_time_ms: 800
+    min_throughput_per_second: 150
+    max_error_rate: 0.01
+
+  high_load:
+    max_response_time_ms: 2000
+    min_throughput_per_second: 300
+    max_error_rate: 0.05
+
+  memory_leak:
+    max_memory_growth_mb_per_hour: 100
+    max_memory_usage_mb: 1024
+    max_error_rate: 0.02
+
+  database_performance:
+    max_response_time_ms: 1500
+    min_throughput_per_second: 120
+    max_error_rate: 0.02
+    max_database_connections: 20
+    max_database_query_time_ms: 100
+
+# Test configuration
+test_config:
+  # General settings
+  base_url: "http://localhost:8080"
+  protocol: "http"
+  timeout_ms: 30000
+  follow_redirects: true
+
+  # Load testing profiles
+  profiles:
+    development:
+      base_url: "http://localhost:8080"
+      concurrent_users_multiplier: 0.5
+      duration_multiplier: 0.5
+
+    staging:
+      base_url: "https://staging.memorize-words.com"
+      concurrent_users_multiplier: 0.8
+      duration_multiplier: 1.0
+
+    production:
+      base_url: "https://api.memorize-words.com"
+      concurrent_users_multiplier: 1.0
+      duration_multiplier: 1.0
+
+  # Reporting configuration
+  reporting:
+    generate_html_report: true
+    generate_json_report: true
+    generate_csv_report: true
+    include_individual_responses: false
+    include_request_headers: false
+    include_response_headers: false
+
+  # Monitoring configuration
+  monitoring:
+    enable_jvm_monitoring: true
+    enable_database_monitoring: true
+    enable_system_metrics: true
+    monitoring_interval_ms: 5000
+
+    jvm_metrics:
+      - "memory.heap.used"
+      - "memory.heap.max"
+      - "gc.time"
+      - "thread.count"
+
+    database_metrics:
+      - "connection_pool.active"
+      - "connection_pool.idle"
+      - "query.time"
+      - "slow_queries"
+
+    system_metrics:
+      - "cpu.usage"
+      - "memory.usage"
+      - "disk.usage"
