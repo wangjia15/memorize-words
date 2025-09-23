@@ -59,6 +59,57 @@ public class GlobalExceptionHandler {
     }
 
     /**
+     * Handles access denied exceptions.
+     */
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<Map<String, Object>> handleAccessDenied(
+            AccessDeniedException ex, WebRequest request) {
+
+        Map<String, Object> body = new HashMap<>();
+        body.put("timestamp", LocalDateTime.now());
+        body.put("status", HttpStatus.FORBIDDEN.value());
+        body.put("error", "Access Denied");
+        body.put("message", ex.getMessage());
+        body.put("path", request.getDescription(false));
+
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(body);
+    }
+
+    /**
+     * Handles duplicate word exceptions.
+     */
+    @ExceptionHandler(DuplicateWordException.class)
+    public ResponseEntity<Map<String, Object>> handleDuplicateWord(
+            DuplicateWordException ex, WebRequest request) {
+
+        Map<String, Object> body = new HashMap<>();
+        body.put("timestamp", LocalDateTime.now());
+        body.put("status", HttpStatus.CONFLICT.value());
+        body.put("error", "Duplicate Word");
+        body.put("message", ex.getMessage());
+        body.put("path", request.getDescription(false));
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(body);
+    }
+
+    /**
+     * Handles import exceptions.
+     */
+    @ExceptionHandler(ImportException.class)
+    public ResponseEntity<Map<String, Object>> handleImportException(
+            ImportException ex, WebRequest request) {
+
+        Map<String, Object> body = new HashMap<>();
+        body.put("timestamp", LocalDateTime.now());
+        body.put("status", HttpStatus.BAD_REQUEST.value());
+        body.put("error", "Import Error");
+        body.put("message", ex.getMessage());
+        body.put("path", request.getDescription(false));
+
+        return ResponseEntity.badRequest().body(body);
+    }
+
+    /**
      * Handles illegal argument exceptions.
      */
     @ExceptionHandler(IllegalArgumentException.class)
