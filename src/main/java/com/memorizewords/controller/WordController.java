@@ -8,6 +8,7 @@ import com.memorizewords.dto.response.ApiResponse;
 import com.memorizewords.dto.response.BulkImportResult;
 import com.memorizewords.dto.response.WordDto;
 import com.memorizewords.entity.User;
+import com.memorizewords.service.DuplicateDetectionService;
 import com.memorizewords.service.ImportExportService;
 import com.memorizewords.service.WordService;
 import lombok.RequiredArgsConstructor;
@@ -23,10 +24,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -41,6 +43,7 @@ public class WordController {
 
     private final WordService wordService;
     private final ImportExportService importExportService;
+    private final DuplicateDetectionService duplicateDetectionService;
 
     @PostMapping
     public ResponseEntity<ApiResponse<WordDto>> createWord(
@@ -126,6 +129,70 @@ public class WordController {
             .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
             .contentType(MediaType.APPLICATION_OCTET_STREAM)
             .body(resource);
+    }
+
+    @GetMapping("/similar")
+    public ResponseEntity<ApiResponse<List<WordDto>>> getSimilarWords(
+            @RequestParam String partialWord,
+            @RequestParam(required = false, defaultValue = "en") String language,
+            @RequestParam(defaultValue = "10") @Min(1) int limit,
+            Authentication authentication) {
+
+        User user = getCurrentUser(authentication);
+        List<WordDto> similarWords = wordService.getSimilarWords(partialWord, language, limit);
+
+        return ResponseEntity.ok(ApiResponse.success("Similar words retrieved successfully", similarWords));
+    }
+
+    @GetMapping("/duplicates/stats")
+    public ResponseEntity<ApiResponse<DuplicateDetectionService.DuplicateStats>> getDuplicateStats(
+            Authentication authentication) {
+
+        User user = getCurrentUser(authentication);
+        DuplicateDetectionService.DuplicateStats stats = wordService.getDuplicateStats(user);
+
+        return ResponseEntity.ok(ApiResponse.success("Duplicate statistics retrieved successfully", stats));
+    }
+
+    @PostMapping("/{id}/duplicate-check")
+    public ResponseEntity<ApiResponse<Boolean>> checkForDuplicates(
+            @PathVariable Long id,
+            @RequestParam String word,
+            @RequestParam(required = false, defaultValue = "en") String language,
+            Authentication authentication) {
+
+        User user = getCurrentUser(authentication);
+        boolean isDuplicate = duplicateDetectionService.isDuplicateWordForUser(word, language, user.getId());
+
+        return ResponseEntity.ok(ApiResponse.success("Duplicate check completed", isDuplicate));
+    }
+
+    @GetMapping("/my-words")
+    public ResponseEntity<ApiResponse<Page<WordDto>>> getMyWords(
+            @PageableDefault(size = 20, sort = "createdAt", direction = org.springframework.data.domain.Sort.Direction.DESC) Pageable pageable,
+            Authentication authentication) {
+
+        User user = getCurrentUser(authentication);
+        WordSearchCriteria criteria = new WordSearchCriteria();
+        criteria.setCreatedByUserId(user.getId());
+
+        Page<WordDto> words = wordService.searchWords(criteria, user, pageable);
+
+        return ResponseEntity.ok(ApiResponse.success("User words retrieved successfully", words));
+    }
+
+    @GetMapping("/public")
+    public ResponseEntity<ApiResponse<Page<WordDto>>> getPublicWords(
+            @PageableDefault(size = 20, sort = "createdAt", direction = org.springframework.data.domain.Sort.Direction.DESC) Pageable pageable,
+            Authentication authentication) {
+
+        User user = getCurrentUser(authentication);
+        WordSearchCriteria criteria = new WordSearchCriteria();
+        criteria.setIsPublic(true);
+
+        Page<WordDto> words = wordService.searchWords(criteria, user, pageable);
+
+        return ResponseEntity.ok(ApiResponse.success("Public words retrieved successfully", words));
     }
 
     private User getCurrentUser(Authentication authentication) {
