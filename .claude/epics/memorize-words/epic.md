@@ -1,8 +1,8 @@
 ---
 name: memorize-words
-status: backlog
+status: in-progress
 created: 2025-09-22T01:10:55Z
-progress: 0%
+progress: 18%
 prd: .claude/prds/memorize-words.md
 github: https://github.com/wangjia15/memorize-words/issues/1
 ---
