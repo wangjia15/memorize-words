@@ -8,7 +8,7 @@ import com.memorizewords.dto.response.WordDto;
 import com.memorizewords.dto.response.WordImportDto;
 import com.memorizewords.entity.User;
 import com.memorizewords.entity.Word;
-import com.memorizewords.enum.DifficultyLevel;
+import com.memorizewords.enums.DifficultyLevel;
 import com.memorizewords.exception.DuplicateWordException;
 import com.memorizewords.exception.ImportException;
 import com.memorizewords.repository.WordRepository;

@@ -1,7 +1,7 @@
 package com.memorizewords.entity;
 
-import com.memorizewords.enum.DifficultyLevel;
-import com.memorizewords.enum.WordCategory;
+import com.memorizewords.enums.DifficultyLevel;
+import com.memorizewords.enums.WordCategory;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;

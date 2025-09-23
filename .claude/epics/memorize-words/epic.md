@@ -1,10 +1,11 @@
 ---
 name: memorize-words
-status: backlog
+status: in-progress
 created: 2025-09-22T01:10:55Z
-progress: 0%
+updated: 2025-09-23T05:51:12Z
+progress: 60%
 prd: .claude/prds/memorize-words.md
-github: [Will be updated when synced to GitHub]
+github: https://github.com/wangjia15/memorize-words
 ---
 
 # Epic: memorize-words

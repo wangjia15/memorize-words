@@ -9,6 +9,7 @@ import com.memorizewords.dto.response.WordDto;
 import com.memorizewords.dto.response.WordImportDto;
 import com.memorizewords.entity.User;
 import com.memorizewords.entity.Word;
+import com.memorizewords.enums.DifficultyLevel;
 import com.memorizewords.exception.DuplicateWordException;
 import com.memorizewords.exception.ImportException;
 import com.memorizewords.repository.WordRepository;
@@ -202,12 +203,12 @@ public class ImportExportService {
 
         if (importWord.getDifficulty() != null && !importWord.getDifficulty().trim().isEmpty()) {
             try {
-                request.setDifficulty(com.memorizewords.enum.DifficultyLevel.valueOf(importWord.getDifficulty().toUpperCase()));
+                request.setDifficulty(DifficultyLevel.valueOf(importWord.getDifficulty().toUpperCase()));
             } catch (IllegalArgumentException e) {
-                request.setDifficulty(com.memorizewords.enum.DifficultyLevel.BEGINNER);
+                request.setDifficulty(DifficultyLevel.BEGINNER);
             }
         } else {
-            request.setDifficulty(com.memorizewords.enum.DifficultyLevel.BEGINNER);
+            request.setDifficulty(DifficultyLevel.BEGINNER);
         }
 
         if (importWord.getIsPublic() != null && !importWord.getIsPublic().trim().isEmpty()) {

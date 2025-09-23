@@ -1,4 +1,4 @@
-package com.memorizewords.enum;
+package com.memorizewords.enums;
 
 /**
  * Word category enumeration.

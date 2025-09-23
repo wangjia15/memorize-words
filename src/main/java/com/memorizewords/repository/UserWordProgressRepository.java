@@ -3,7 +3,7 @@ package com.memorizewords.repository;
 import com.memorizewords.entity.User;
 import com.memorizewords.entity.UserWordProgress;
 import com.memorizewords.entity.Word;
-import com.memorizewords.enum.LearningStatus;
+import com.memorizewords.enums.LearningStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

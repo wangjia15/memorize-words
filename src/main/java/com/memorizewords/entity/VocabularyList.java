@@ -1,6 +1,6 @@
 package com.memorizewords.entity;
 
-import com.memorizewords.enum.ListType;
+import com.memorizewords.enums.ListType;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;

@@ -5,15 +5,15 @@
 epic: memorize-words
 task_number: 005-github
 title: Vocabulary Management System (GitHub Issue #5)
-status: pending
+status: completed
 priority: high
 effort_estimate: 12
 parallel: true
 dependencies: [003]
 created: 2025-09-23T00:00:00Z
-updated: 2025-09-23T01:38:27Z
+updated: 2025-09-23T05:51:12Z
 assignee: developer
-github: https://github.com/username/repo/issues/5
+github: https://github.com/wangjia15/memorize-words/issues/5
 tags: [vocabulary, crud, word-management, custom-lists, spring-data, github-issue]
 ```
 

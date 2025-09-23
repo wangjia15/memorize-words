@@ -1,6 +1,6 @@
 package com.memorizewords.entity;
 
-import com.memorizewords.enum.LearningStatus;
+import com.memorizewords.enums.LearningStatus;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;

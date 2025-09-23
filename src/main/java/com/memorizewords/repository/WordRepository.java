@@ -2,8 +2,8 @@ package com.memorizewords.repository;
 
 import com.memorizewords.entity.User;
 import com.memorizewords.entity.Word;
-import com.memorizewords.enum.DifficultyLevel;
-import com.memorizewords.enum.WordCategory;
+import com.memorizewords.enums.DifficultyLevel;
+import com.memorizewords.enums.WordCategory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
