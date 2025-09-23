@@ -1,6 +1,6 @@
 ---
 name: memorize-words
-status: in-progress
+status: completed
 created: 2025-09-22T01:10:55Z
 updated: 2025-09-23T11:05:04Z
 progress: 100%
