@@ -1,0 +1,326 @@
+{
+  "dashboard": {
+    "id": null,
+    "title": "Memorize Words - Application Performance",
+    "tags": ["memorize-words", "performance"],
+    "timezone": "browser",
+    "panels": [
+      {
+        "id": 1,
+        "title": "HTTP Requests Rate",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(http_server_requests_seconds_count[5m])",
+            "legendFormat": "{{method}} {{status}}"
+          }
+        ],
+        "yAxis": {
+          "format": "short"
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 0
+        }
+      },
+      {
+        "id": 2,
+        "title": "HTTP Response Time",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, rate(http_server_requests_seconds_bucket[5m]))",
+            "legendFormat": "95th percentile"
+          },
+          {
+            "expr": "histogram_quantile(0.50, rate(http_server_requests_seconds_bucket[5m]))",
+            "legendFormat": "50th percentile"
+          }
+        ],
+        "yAxis": {
+          "format": "s"
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 0
+        }
+      },
+      {
+        "id": 3,
+        "title": "JVM Memory Usage",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "jvm_memory_bytes_used{area='heap'}",
+            "legendFormat": "Heap Used"
+          },
+          {
+            "expr": "jvm_memory_bytes_committed{area='heap'}",
+            "legendFormat": "Heap Committed"
+          },
+          {
+            "expr": "jvm_memory_bytes_max{area='heap'}",
+            "legendFormat": "Heap Max"
+          }
+        ],
+        "yAxis": {
+          "format": "bytes"
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 8
+        }
+      },
+      {
+        "id": 4,
+        "title": "Database Connection Pool",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "database_connections_active",
+            "legendFormat": "Active Connections"
+          },
+          {
+            "expr": "database_connections_idle",
+            "legendFormat": "Idle Connections"
+          },
+          {
+            "expr": "database_connections_total",
+            "legendFormat": "Total Connections"
+          }
+        ],
+        "yAxis": {
+          "format": "short"
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 8
+        }
+      },
+      {
+        "id": 5,
+        "title": "Service Method Execution Time",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, rate(service_method_execution_seconds_bucket[5m]))",
+            "legendFormat": "{{class}}.{{method}} - 95th percentile"
+          }
+        ],
+        "yAxis": {
+          "format": "s"
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 24,
+          "x": 0,
+          "y": 16
+        }
+      },
+      {
+        "id": 6,
+        "title": "Repository Query Performance",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, rate(repository_query_execution_seconds_bucket[5m]))",
+            "legendFormat": "{{class}}.{{method}} - 95th percentile"
+          }
+        ],
+        "yAxis": {
+          "format": "s"
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 24,
+          "x": 0,
+          "y": 24
+        }
+      },
+      {
+        "id": 7,
+        "title": "Cache Performance",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(cache_hits_total[5m])",
+            "legendFormat": "Cache Hits"
+          },
+          {
+            "expr": "rate(cache_misses_total[5m])",
+            "legendFormat": "Cache Misses"
+          }
+        ],
+        "yAxis": {
+          "format": "short"
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 32
+        }
+      },
+      {
+        "id": 8,
+        "title": "Error Rate",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(http_server_requests_seconds_count{status=~'5..'}[5m])",
+            "legendFormat": "HTTP 5xx Errors"
+          },
+          {
+            "expr": "rate(application_errors_total[5m])",
+            "legendFormat": "Application Errors"
+          }
+        ],
+        "yAxis": {
+          "format": "short"
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 32
+        }
+      },
+      {
+        "id": 9,
+        "title": "Review Session Performance",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, rate(review_session_duration_seconds_bucket[5m]))",
+            "legendFormat": "95th percentile"
+          },
+          {
+            "expr": "rate(review_sessions_started_total[5m])",
+            "legendFormat": "Sessions Started"
+          },
+          {
+            "expr": "rate(review_sessions_completed_total[5m])",
+            "legendFormat": "Sessions Completed"
+          }
+        ],
+        "yAxis": {
+          "format": "short"
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 24,
+          "x": 0,
+          "y": 40
+        }
+      },
+      {
+        "id": 10,
+        "title": "Slow Queries",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(database_slow_queries_total[5m])",
+            "legendFormat": "Slow Queries - {{query_type}}"
+          }
+        ],
+        "yAxis": {
+          "format": "short"
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 24,
+          "x": 0,
+          "y": 48
+        }
+      },
+      {
+        "id": 11,
+        "title": "Memory Usage Percentage",
+        "type": "gauge",
+        "targets": [
+          {
+            "expr": "jvm_memory_usage_percent",
+            "legendFormat": "Memory Usage"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percent",
+            "min": 0,
+            "max": 100,
+            "thresholds": {
+              "steps": [
+                {"color": "green", "value": 0},
+                {"color": "yellow", "value": 70},
+                {"color": "red", "value": 90}
+              ]
+            }
+          }
+        },
+        "gridPos": {
+          "h": 4,
+          "w": 8,
+          "x": 0,
+          "y": 56
+        }
+      },
+      {
+        "id": 12,
+        "title": "Active Thread Count",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "jvm_threads_live",
+            "legendFormat": "Live Threads"
+          },
+          {
+            "expr": "jvm_threads_daemon",
+            "legendFormat": "Daemon Threads"
+          }
+        ],
+        "yAxis": {
+          "format": "short"
+        },
+        "gridPos": {
+          "h": 4,
+          "w": 8,
+          "x": 8,
+          "y": 56
+        }
+      },
+      {
+        "id": 13,
+        "title": "Garbage Collection Time",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(jvm_gc_collection_time_total[5m])",
+            "legendFormat": "GC Time - {{name}}"
+          }
+        ],
+        "yAxis": {
+          "format": "ms"
+        },
+        "gridPos": {
+          "h": 4,
+          "w": 8,
+          "x": 16,
+          "y": 56
+        }
+      }
+    ],
+    "time": {
+      "from": "now-1h",
+      "to": "now"
+    },
+    "refresh": "30s"
+  }
+}
