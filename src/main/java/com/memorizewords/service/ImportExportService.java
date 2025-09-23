@@ -1,5 +1,7 @@
 package com.memorizewords.service;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.memorizewords.dto.request.BulkImportOptions;
 import com.memorizewords.dto.request.CreateWordRequest;
 import com.memorizewords.dto.response.BulkImportResult;
@@ -28,6 +30,7 @@ import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Service for importing and exporting words in various formats.
@@ -40,6 +43,7 @@ public class ImportExportService {
 
     private final WordRepository wordRepository;
     private final WordService wordService;
+    private final ObjectMapper objectMapper;
 
     public BulkImportResult bulkImportWords(MultipartFile file, BulkImportOptions options, User user) {
         log.info("Starting bulk import for user: {} with format: {}", user.getUsername(), options.getFormat());
@@ -150,8 +154,26 @@ public class ImportExportService {
                 }
             }
         } else if ("json".equalsIgnoreCase(format)) {
-            // JSON parsing would be implemented here
-            throw new ImportException("JSON import not yet implemented");
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream(), StandardCharsets.UTF_8))) {
+                List<Map<String, Object>> jsonData = objectMapper.readValue(reader, new TypeReference<List<Map<String, Object>>>() {});
+
+                for (Map<String, Object> wordData : jsonData) {
+                    WordImportDto word = new WordImportDto();
+
+                    // Map JSON fields to WordImportDto
+                    word.setWord(getStringValue(wordData, "word"));
+                    word.setLanguage(getStringValue(wordData, "language"));
+                    word.setDefinition(getStringValue(wordData, "definition"));
+                    word.setPronunciation(getStringValue(wordData, "pronunciation"));
+                    word.setExample(getStringValue(wordData, "example"));
+                    word.setDifficulty(getStringValue(wordData, "difficulty"));
+                    word.setCategories(getStringValue(wordData, "categories"));
+                    word.setTags(getStringValue(wordData, "tags"));
+                    word.setIsPublic(getStringValue(wordData, "isPublic"));
+
+                    words.add(word);
+                }
+            }
         } else {
             throw new ImportException("Unsupported import format: " + format);
         }
@@ -227,7 +249,33 @@ public class ImportExportService {
     }
 
     private Resource exportToJson(List<Word> words) throws IOException {
-        // JSON export would be implemented here
-        throw new ImportException("JSON export not yet implemented");
+        List<Map<String, Object>> jsonData = new ArrayList<>();
+
+        for (Word word : words) {
+            Map<String, Object> wordData = new java.util.HashMap<>();
+            wordData.put("id", word.getId());
+            wordData.put("word", word.getWord());
+            wordData.put("language", word.getLanguage());
+            wordData.put("definition", word.getDefinition());
+            wordData.put("pronunciation", word.getPronunciation());
+            wordData.put("example", word.getExample());
+            wordData.put("difficulty", word.getDifficulty() != null ? word.getDifficulty().toString() : null);
+            wordData.put("categories", word.getCategories() != null ?
+                word.getCategories().stream().map(Enum::toString).toList() : null);
+            wordData.put("tags", word.getTags());
+            wordData.put("isPublic", word.getIsPublic());
+            wordData.put("createdBy", word.getCreatedBy() != null ? word.getCreatedBy().getUsername() : null);
+            wordData.put("createdAt", word.getCreatedAt());
+
+            jsonData.add(wordData);
+        }
+
+        String jsonString = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonData);
+        return new ByteArrayResource(jsonString.getBytes(StandardCharsets.UTF_8));
+    }
+
+    private String getStringValue(Map<String, Object> data, String key) {
+        Object value = data.get(key);
+        return value != null ? value.toString() : null;
     }
 }
