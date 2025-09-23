@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import {
   LearningSession,
   LearningWord,
@@ -81,17 +81,42 @@ const mockApi = {
     return { data: { data: {} } };
   },
 
-  patch: async (url: string) => {
+  patch: async (_url: string) => {
     await new Promise(resolve => setTimeout(resolve, 200));
     return { data: { data: {} } };
   }
 };
 
-export const useLearningSession = (sessionConfig?: LearningSessionConfig) => {
+export const useLearningSession = (_sessionConfig?: LearningSessionConfig) => {
   const [session, setSession] = useState<LearningSession | null>(null);
   const [currentWord, setCurrentWord] = useState<LearningWord | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [wordStartTime, setWordStartTime] = useState<Date | null>(null);
+  const intervalRef = useRef<number | null>(null);
+
+  // Enhanced time tracking
+  useEffect(() => {
+    if (session && !session.isPaused && !session.isCompleted) {
+      intervalRef.current = setInterval(() => {
+        setSession(prev => {
+          if (!prev || prev.isPaused || prev.isCompleted) return prev;
+          const now = new Date();
+          const duration = Math.floor((now.getTime() - prev.startTime.getTime()) / 1000);
+          return { ...prev, duration };
+        });
+      }, 1000);
+    } else if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    };
+  }, [session?.isPaused, session?.isCompleted]);
 
   const startSession = useCallback(async (config: LearningSessionConfig) => {
     try {
@@ -99,10 +124,11 @@ export const useLearningSession = (sessionConfig?: LearningSessionConfig) => {
       setError(null);
 
       const response = await mockApi.post('/api/learning-sessions', config);
-      const newSession = response.data.data;
+      const newSession = response.data.data as LearningSession;
 
       setSession(newSession);
       setCurrentWord(newSession.words[0]);
+      setWordStartTime(new Date());
     } catch (err) {
       setError('Failed to start learning session');
       console.error('Start session error:', err);
@@ -151,6 +177,7 @@ export const useLearningSession = (sessionConfig?: LearningSessionConfig) => {
 
       if (nextIndex < updatedSession.words.length) {
         setCurrentWord(updatedSession.words[nextIndex]);
+        setWordStartTime(new Date()); // Reset timer for next word
         setSession(updatedSession);
       } else {
         // Session completed
@@ -234,6 +261,7 @@ export const useLearningSession = (sessionConfig?: LearningSessionConfig) => {
 
       setSession(restartedSession);
       setCurrentWord(restartedSession.words[0]);
+      setWordStartTime(new Date());
     } catch (err) {
       setError('Failed to restart session');
       console.error('Restart session error:', err);
@@ -241,8 +269,9 @@ export const useLearningSession = (sessionConfig?: LearningSessionConfig) => {
   }, [session]);
 
   const calculateTimeSpent = (): number => {
-    // Return time spent on current word in seconds
-    return Math.floor(Math.random() * 30) + 5; // Mock implementation
+    if (!wordStartTime) return 0;
+    const now = new Date();
+    return Math.floor((now.getTime() - wordStartTime.getTime()) / 1000);
   };
 
   const calculateSessionDuration = (startTime: Date, endTime: Date): number => {

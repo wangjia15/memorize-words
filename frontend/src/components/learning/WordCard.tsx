@@ -9,7 +9,6 @@ import { FlashcardMode } from "./FlashcardMode";
 import { MultipleChoiceMode } from "./MultipleChoiceMode";
 import { TypingMode } from "./TypingMode";
 import { PronunciationMode } from "./PronunciationMode";
-import { cn } from "@/lib/utils";
 
 interface WordCardProps {
   word: LearningWord;
@@ -34,7 +33,6 @@ export const WordCard: React.FC<WordCardProps> = ({
   enableAudio,
   showHints
 }) => {
-  const [userAnswer, setUserAnswer] = useState('');
   const [showResult, setShowResult] = useState(false);
   const [isCorrect, setIsCorrect] = useState(false);
 
@@ -52,12 +50,6 @@ export const WordCard: React.FC<WordCardProps> = ({
     }
   };
 
-  const handleSubmitAnswer = (answer: string) => {
-    const correct = answer.toLowerCase().trim() === word.word.toLowerCase().trim();
-    setIsCorrect(correct);
-    setShowResult(true);
-    onAnswer(correct, answer);
-  };
 
 
 
@@ -79,7 +71,7 @@ export const WordCard: React.FC<WordCardProps> = ({
         return (
           <MultipleChoiceMode
             word={word}
-            onAnswer={handleSubmitAnswer}
+            onAnswer={(isCorrect, answer) => onAnswer(isCorrect, answer)}
             showResult={showResult}
             isCorrect={isCorrect}
           />
@@ -89,7 +81,7 @@ export const WordCard: React.FC<WordCardProps> = ({
         return (
           <TypingMode
             word={word}
-            onAnswer={handleSubmitAnswer}
+            onAnswer={(isCorrect, answer) => onAnswer(isCorrect, answer)}
             showResult={showResult}
             isCorrect={isCorrect}
             showHints={showHints}
@@ -100,7 +92,7 @@ export const WordCard: React.FC<WordCardProps> = ({
         return (
           <PronunciationMode
             word={word}
-            onAnswer={(isCorrect, confidence) => onAnswer(isCorrect)}
+            onAnswer={(isCorrect) => onAnswer(isCorrect)}
             showResult={showResult}
             isCorrect={isCorrect}
             enableSpeechRecognition={enableAudio}

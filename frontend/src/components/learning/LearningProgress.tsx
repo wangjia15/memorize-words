@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { Clock, Target, Trophy, Pause, Play, RotateCcw } from "lucide-react";
-import { LearningSession, LearningMode } from "@/types/learning";
+import { LearningSession } from "@/types/learning";
 
 interface LearningProgressProps {
   session: LearningSession;
