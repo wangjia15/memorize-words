@@ -35,3 +35,27 @@ logging:
 # Development-specific CORS
 cors:
   allowed-origins: http://localhost:3000,http://localhost:5173,http://127.0.0.1:3000,http://127.0.0.1:5173
+
+# Development monitoring configuration
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
+    prometheus:
+      enabled: true
+
+monitoring:
+  enabled: true
+  alerting:
+    enabled: true
+    slow-query-threshold-ms: 500  # Lower threshold for development
+    slow-api-threshold-ms: 200     # Lower threshold for development
+    high-memory-threshold-percent: 80
+    critical-memory-threshold-percent: 90
+  metrics:
+    collection-interval-ms: 30000  # More frequent collection in development
+    report-interval-ms: 120000

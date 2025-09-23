@@ -44,3 +44,43 @@ logging:
 # Production-specific CORS
 cors:
   allowed-origins: ${FRONTEND_URL}
+
+# Production monitoring configuration
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: when-authorized
+    prometheus:
+      enabled: true
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+        push:
+          enabled: ${PROMETHEUS_PUSHGATEWAY_ENABLED:false}
+          endpoint: ${PROMETHEUS_PUSHGATEWAY_URL:http://localhost:9091}
+          interval: 30s
+          job: memorize-words
+
+monitoring:
+  enabled: true
+  alerting:
+    enabled: true
+    slow-query-threshold-ms: 2000  # Higher threshold for production
+    slow-api-threshold-ms: 1000    # Higher threshold for production
+    high-memory-threshold-percent: 85
+    critical-memory-threshold-percent: 95
+  metrics:
+    collection-interval-ms: 60000
+    report-interval-ms: 300000
+  database:
+    connection-pool-monitoring: true
+    slow-query-monitoring: true
+    query-logging: false  # Disable query logging in production
+  cache:
+    monitoring: true
+    hit-ratio-tracking: true

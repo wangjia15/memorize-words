@@ -33,10 +33,36 @@ management:
   endpoints:
     web:
       exposure:
-        include: health,info
+        include: health,info,metrics,prometheus
   endpoint:
     health:
       show-details: when-authorized
+      probes:
+        enabled: true
+    metrics:
+      enabled: true
+    prometheus:
+      enabled: true
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+    tags:
+      application: memorize-words
+    distribution:
+      percentiles-histogram:
+        http.server.requests: true
+        service.method.execution: true
+        repository.query.execution: true
+      percentiles:
+        http.server.requests: 0.5, 0.95, 0.99
+        service.method.execution: 0.5, 0.95, 0.99
+    web:
+      server:
+        request:
+          autotime:
+            enabled: true
+            percentiles: 0.5, 0.95, 0.99
 
 logging:
   level:
@@ -52,3 +78,22 @@ cors:
   allowed-methods: GET,POST,PUT,DELETE,OPTIONS
   allowed-headers: "*"
   allow-credentials: true
+
+# Performance monitoring configuration
+monitoring:
+  enabled: true
+  alerting:
+    enabled: true
+    slow-query-threshold-ms: 1000
+    slow-api-threshold-ms: 500
+    high-memory-threshold-percent: 85
+    critical-memory-threshold-percent: 90
+  metrics:
+    collection-interval-ms: 60000
+    report-interval-ms: 300000
+  database:
+    connection-pool-monitoring: true
+    slow-query-monitoring: true
+  cache:
+    monitoring: true
+    hit-ratio-tracking: true
